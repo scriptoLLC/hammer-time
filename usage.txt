@@ -1,0 +1,11 @@
+Usage: socket-swarm [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
+
+Options:
+  -v, --version     Print the version number
+  -p, --port        What port to use. Default = 80
+  -c, --concurrent  How many clients to run concurrently. Default = 100
+  -f, --frequency   Frequency of client messages (ms). Default = 50
+  -d, --duration    Length of test (ms). Default = 60000 (1 minute)
+  -g, --generator   Name of generator file to load, if any. This will specify
+                    the details of how to connect and authenticate to your socket server
+
