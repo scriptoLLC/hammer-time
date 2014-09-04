@@ -1,6 +1,6 @@
 {
   "name": "socket-warm",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Flood a socket.io server with messages",
   "main": "index.js",
   "scripts": {
