@@ -1,18 +1,18 @@
-# socket-swarm
+# hammer-time
 
 Create a swarm of socket.io clients to stress test your socket-based application.  Provides hooks to allow for HTTP based authentication to be passed into the socket connection requests if necessary, as well as listening to and responding to various socket events.
 
 ## Install/Run
 
 ```
-npm i -g ws-test
-ws-test example.com --port 9000 --concurrent 50 --frequency 6000 --duration 100000 --generator my-gen.js
+npm i -g hammer-time
+hammer-time example.com --port 9000 --concurrent 50 --frequency 6000 --duration 100000 --generator my-gen.js
 ```
 
 ## Usage
 
 ```
-Usage: ws-test [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
+Usage: hammer-time [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
 
 Options:
   -p, --port        What port to use. Default = 80
