@@ -44,7 +44,9 @@ exports.events = [{
  * @returns {object} undefined
  */
 exports.authenticate = function(host, port, iteration, cb) {
-  return cb(null, {sessionId: 'session'+iteration}, userBase+iteration, passBase+iteration);
+  return cb(null, {
+    sessionId: 'session' + iteration
+  }, userBase + iteration, passBase + iteration);
 };
 
 /**
@@ -83,4 +85,3 @@ exports.clientIterateMessage = function(cookies, user, pass) {
     session: cookies.sessionId
   };
 };
-

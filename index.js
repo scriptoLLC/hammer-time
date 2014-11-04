@@ -2,6 +2,8 @@
 
 var path = require('path');
 var io = require('socket.io-client');
+
+var defaults = require('./defaults');
 var _intervals = [];
 var done;
 
@@ -18,24 +20,16 @@ var done;
  * @param   {integer} iteration What client number you're on
  * @returns {object} undefined
  */
-function createClient(host, port, concurrent, frequency, duration, gen, iteration){
-  /**
-   * Default passthru auth option if one is not provided by the generator
-   * @method  auth
-   * @async
-   * @private
-   * @param   {string} host hostname
-   * @param   {integer} port port
-   * @param   {integer} iteration client number
-   * @param   {function} postAuth the post-auth method
-   * @returns {object} undefined
-   */
-  var auth =  function(host, port, iteration, postAuth){
-    postAuth(null, host, port);
-  };
+function createClient(host, port, concurrent, frequency, duration, gen, iteration) {
+  var auth = defaults.auth;
+  var getMessage = defaults.getMessage;
 
-  if(typeof gen.authenticate === 'function'){
+  if (typeof gen.authenticate === 'function') {
     auth = gen.authenticate;
+  }
+
+  if (typeof gen.clientIterateMessage === 'function') {
+    getMessage = gen.clientIterateMessage;
   }
 
   /**
@@ -49,43 +43,39 @@ function createClient(host, port, concurrent, frequency, duration, gen, iteratio
    * @param   {string} pass The password used to login
    * @returns {object} undefined
    */
-  var postAuth = function(err, cookies, user, pass){
-    if(err){
+  var postAuth = function(err, cookies, user, pass) {
+    if (err) {
       console.log('Auth error', err);
+      process.exit(1);
     }
 
-    var socketUrl = gen.getSocketURL(host, port, cookies, user, pass) || host+':'+port;
-    var socket = io(socketUrl);
+    var socketUrl = gen.getSocketURL(host, port, cookies, user, pass) || host + ':' + port;
+    var socket = io(socketUrl, {
+      multiplex: false
+    });
 
-    var getMessage = function(){
-      return {};
-    };
-
-    if(typeof gen.clientIteratemessage === 'function'){
-      getMessage = gen.clientIteratemessage;
-    }
-
-    gen.events.forEach(function(evt){
-      socket.on(evt.name, function(data){
+    gen.events.forEach(function(evt) {
+      socket.on(evt.name, function(data) {
         evt.method.call(null, evt.name, cookies, user, pass, data, socket);
       });
     });
 
-    _intervals.push(setInterval(function(){
-      console.log('sending message', iteration);
+    var sendMessage = function(){
       var message = getMessage(cookies, user, pass);
       socket.json.send(message);
-    }, frequency));
+    };
 
-    setTimeout(function(){
-      console.log('finished', iteration);
+    _intervals.push(setInterval(sendMessage, frequency));
+
+    setTimeout(function() {
       clearInterval(_intervals.pop());
       socket.emit('disconnect');
       socket.close();
-      if(_intervals.length === 0){
+      if (_intervals.length === 0) {
         done();
       }
     }, duration);
+
   };
 
   auth(host, port, iteration, postAuth);
@@ -97,25 +87,25 @@ function createClient(host, port, concurrent, frequency, duration, gen, iteratio
  * @param   {integer} duration The length of the delay
  * @returns {integer} the amount of ms that hte client should wait before starting a new instance
  */
-function delay(duration){
-  return Math.floor(Math.random() * ((duration/10) - 1 + 1)) + 1;
+function delay(duration) {
+  return Math.floor(Math.random() * ((duration / 10) - 1 + 1)) + 1;
 }
 
 /**
  * Generate a swarm of socket clients
  * @method  exports
- * @param   {string} host hostname to swarm
+ * @param   {string}  host hostname to swarm
  * @param   {integer} port port to swarm
  * @param   {integer} concurrent number of clients to stat
  * @param   {integer} frequency amount of time, in ms, to wait between sending sockets
  * @param   {integer} duration amount of time, in ms, to run the each client for
- * @param   {string} generator The path to the file containing the generator exports
- * @returns {object} undefined
+ * @param   {string}  generator The path to the file containing the generator exports
+ * @returns {object}  undefined
  */
-module.exports = function(host, port, concurrent, frequency, duration, generator, cb){
-  if(typeof cb !== 'function'){
-    done = cb = function(){
-      console.log('Done');
+module.exports = function(host, port, concurrent, frequency, duration, generator, cb) {
+  if (typeof cb !== 'function') {
+    done = cb = function() {
+      console.log('Finshed');
       process.exit(0);
     };
   } else {
@@ -123,11 +113,17 @@ module.exports = function(host, port, concurrent, frequency, duration, generator
   }
 
   var gen = generator || {};
-  if(typeof generator === 'string'){
-    gen = require(path.resolve(process.cwd(), generator));
+  if (typeof generator === 'string') {
+    try {
+      gen = require(path.resolve(process.cwd(), generator));
+    } catch (e) {
+      console.log('Could not load generator', generator)
+      console.log(err);
+      process.exit(1);
+    }
   }
 
-  for(var i = 0; i < concurrent; i++){
+  for (var i = 0; i < concurrent; i++) {
     createClient(host, port, concurrent, frequency, duration, gen, i);
   }
 };
