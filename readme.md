@@ -17,12 +17,15 @@ hammer-time example.com --port 9000 --concurrent 50 --frequency 6000 --duration 
 Usage: hammer-time [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
 
 Options:
+  -v, --version     Print the version number
   -p, --port        What port to use. Default = 80
   -c, --concurrent  How many clients to run concurrently. Default = 100
   -f, --frequency   Frequency of client messages (ms). Default = 50
   -d, --duration    Length of test (ms). Default = 60000 (1 minute)
   -g, --generator   Name of generator file to load, if any. This will specify
                     the details of how to connect and authenticate to your socket server
+
+
 ```
 
 ## Programmatic Access
@@ -43,11 +46,11 @@ ht(host, port, concurrent, frequency, duration, generator)
 ```
 
 ### Events
-* `start` - The client has started, but not asked any clients to yet connect
-* `message` - A client has sent a message to the server, the message is passed as an argument
-* `disconnect` - A client has disconnected from the server
-* `end` - hammer-time has run for the set duration
-* `error` - hammer-time encountered as an error. The error is passed as an argument
+* `start` → The client has started, but not asked any clients to yet connect
+* `message` → A client has sent a message to the server, the message is passed as an argument
+* `disconnect` → A client has disconnected from the server
+* `end` → hammer-time has run for the set duration
+* `error` → hammer-time encountered as an error. The error is passed as an argument
 
 
 ## Generator

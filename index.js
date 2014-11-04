@@ -133,7 +133,7 @@ module.exports = function(host, port, concurrent, frequency, duration, generator
       gen = require(path.resolve(process.cwd(), generator));
     } catch (e) {
       console.log('Could not load generator', generator)
-      console.log(err);
+      console.log(e);
       process.exit(1);
     }
   }

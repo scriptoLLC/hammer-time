@@ -1,7 +1,8 @@
-Usage: socket-swarm [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
+Usage: hammer-time [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
 
 Options:
-  -v, --version     Print the version number
+  --version         Print the version number
+  -v, --verbose     Print way too much information out to the console
   -p, --port        What port to use. Default = 80
   -c, --concurrent  How many clients to run concurrently. Default = 100
   -f, --frequency   Frequency of client messages (ms). Default = 50
