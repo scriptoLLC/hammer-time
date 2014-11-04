@@ -2,9 +2,11 @@
 'use strict';
 
 var fs = require('fs');
-var minimist = require('minimist');
 
-var runTests = require('../');
+var minimist = require('minimist');
+var log = require('npmlog');
+
+var hammerTime = require('../');
 
 var args;
 var host;
@@ -13,6 +15,7 @@ var concurrent = 100;
 var frequency = 50;
 var duration = 60000;
 var generator;
+var start = (new Date()).getTime();
 
 function usage(){
   fs.createReadStream('usage.txt').pipe(process.stdout);
@@ -37,4 +40,24 @@ frequency = args.frequency || args.f || frequency;
 duration = args.duration || args.d || duration;
 generator = args.generator || args.g || generator;
 
-runTests(host, port, concurrent, frequency, duration, generator);
+hammerTime(host, port, concurrent, frequency, duration, generator)
+	.on('start', function(){
+		log.info('hammer-time', 'Stop! Hammertime!');
+	})
+	.on('client-connected', function(){
+		log.info('hammer-time', 'Client connected');
+	})
+	.on('error', function(err){
+		log.error('hammer-time', 'An error occurred')
+		log.error('hammer-time', err);
+	})
+	.on('disconnect', function(){
+		log.info('hammer-time', 'Client disconnected');
+	})
+	.on('message', function(){
+		process.stdout.write('.');
+	})
+	.on('end', function(){
+		log.info('hammer-time', 'Finished in %j seconds', ((new Date()).getTime() - start) / 1000);
+		process.exit(0);
+	});

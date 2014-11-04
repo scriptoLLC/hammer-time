@@ -25,6 +25,31 @@ Options:
                     the details of how to connect and authenticate to your socket server
 ```
 
+## Programmatic Access
+
+hammer-time is also available as module that can be used outside of the scope of the CLI. (This is how the tests are run!). The arguments to the method are
+the same (and in the same order!) as the CLI, with the addition of an optional callback to be called when the tests are complete.  The method returns an event emitter
+which you can use for monitoring the process.  The [CLI interface](bin/hammer-time.js) is a great example of how this works.
+
+```
+var ht = require('hammer-time');
+ht(host, port, concurrent, frequency, duration, generator)
+	.on('start', function(){
+		console.log('hammer time is starting');
+	})
+	.on('error', function(err){
+		console.log(err);
+	});
+```
+
+### Events
+* `start` - The client has started, but not asked any clients to yet connect
+* `message` - A client has sent a message to the server, the message is passed as an argument
+* `disconnect` - A client has disconnected from the server
+* `end` - hammer-time has run for the set duration
+* `error` - hammer-time encountered as an error. The error is passed as an argument
+
+
 ## Generator
 
 Generators allow you to set custom authentication methods, listeners for the socket, and what message(s) the client should send to flood the server.

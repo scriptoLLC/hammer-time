@@ -3,13 +3,14 @@
 var test = require('tap').test;
 var sio = require('socket.io');
 
-var socketSwarm = require('../');
+var ht = require('../');
 var generator = require('../examples/default-generator');
 var _clients = 0;
 var _messages = 0;
 var _totalClients = 2;
 var _frequency = 50;
 var _duration = 500;
+var m = 0;
 
 function serve(cb){
   var io = sio(2345);
@@ -31,16 +32,44 @@ function serve(cb){
   cb(null, io);
 }
 
-test('swarm', function(t){
+test('multiple clients connect and send messages', function(t){
+  t.plan(23);
   serve(function(err, io){
-    var complete = function(){
-      io.close();
-      t.equal(_clients, _totalClients, _totalClients+' clients connected');
-      t.notEqual(_messages, 0, 'messages were sent');
-      t.end();
-    };
+    t.error(err, 'errors');
 
-    socketSwarm('0.0.0.0', 2345, _totalClients, _frequency, _duration, generator, complete);
+    ht('0.0.0.0', 2345, _totalClients, _frequency, _duration, generator)
+      .on('error', function(err){
+        t.error(err);
+      })
+      .on('start', function(){
+        t.ok(true, 'start fired called');
+      })
+      .on('message', function(msg){
+        t.ok(msg, 'message sent');
+      })
+      .on('disconnect', function(){
+        t.ok(true, 'disconnect was called');
+      })
+      .on('end', function(){
+        io.close();
+        t.equal(_clients, _totalClients, _totalClients+' clients connected');
+        t.notEqual(_messages, 0, _messages+' messages were sent');
+      });
   });
 });
 
+test('failed authentication emits an error', function(t){
+  t.plan(2);
+  generator.authenticate = function(host, port, iter, cb){
+    cb(true);
+  }
+
+  serve(function(err, io){
+    t.error(err, 'errors');
+
+    t.throws(function(){
+      ht('0.0.0.0', 2345, 1, _frequency, _duration, generator);
+    });
+    io.close();
+  });
+});
