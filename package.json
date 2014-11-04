@@ -1,17 +1,17 @@
 {
-  "name": "socket-swarm",
+  "name": "hammer-time",
   "version": "0.1.0",
   "description": "Flood a socket.io server with messages",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: LOL hold on a minute there partner\" && exit 1"
+    "test": "tap test/*spec.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/scriptollc/socket-swarm"
+    "url": "git://github.com/scriptollc/hammer-time"
   },
   "bin": {
-    "socket-swarm": "bin/socket-swarm.js"
+    "hammer-time": "bin/hammer-time.js"
   },
   "keywords": [
     "socket.io",
@@ -27,11 +27,15 @@
   "author": "Todd Kennedy <todd@selfassembled.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/scriptollc/ws-test/issues"
+    "url": "https://github.com/scriptollc/hammer-time/issues"
   },
-  "homepage": "https://github.com/scriptollc/ws-test",
+  "homepage": "https://github.com/scriptollc/hammer-time",
   "dependencies": {
     "minimist": "~1.1.0",
     "socket.io-client": "~1.0.6"
+  },
+  "devDependencies": {
+    "socket.io": "~1.1.0",
+    "tap": "~0.4.12"
   }
 }

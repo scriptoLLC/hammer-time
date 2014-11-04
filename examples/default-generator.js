@@ -1,13 +1,7 @@
 'use strict';
 
-var http = require('http');
-var crypto = require('crypto');
 var url = require('url');
 
-var cookie = require('cookie');
-
-var authName;
-var authPass;
 var userBase = 'test';
 var passBase = 'test';
 
@@ -23,28 +17,20 @@ var passBase = 'test';
 function clientReadyMessage(cookies, user, pass) {
   return {
     type: 'connected',
-    username: user,
+    user: user,
     sessionID: cookies.sessionID,
-    password: pass,
+    pass: pass,
   };
 }
 
 exports.events = [{
   name: 'connect',
-  method: function(event, socket, cookies, user, pass) {
+  method: function(event, cookies, user, pass, data, socket) {
     socket.json.send(clientReadyMessage(cookies, user, pass));
   }
 }, {
-  name: 'message',
-  method: function() {
-    var obj = Array.prototype.slice.call(arguments, -1)[0];
-    console.log('got message', obj);
-  }
-}, {
   name: 'disconnect',
-  method: function() {
-    console.log('recieved a disconnect event from the server');
-  }
+  method: function() {}
 }];
 
 /**
@@ -58,45 +44,7 @@ exports.events = [{
  * @returns {object} undefined
  */
 exports.authenticate = function(host, port, iteration, cb) {
-  authName = userBase + iteration;
-  authPass = passBase + iteration;
-  var payload = ['username=', authName, '&password=', authPass].join('');
-
-  var opts = {
-    method: 'POST',
-    path: '/authenticate',
-    host: host,
-    port: port,
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      'content-length': payload.length
-    }
-  };
-
-  var req = http.request(opts, function(res) {
-    var body = '';
-    res.on('data', function(chunk) {
-      body += chunk.toString();
-    });
-
-    res.on('error', function(err) {
-      return cb(err);
-    });
-
-    res.on('end', function() {
-      var cookies = cookie.parse(res.headers.cookies);
-      if (typeof res.headers.location !== 'string') {
-        return cb(new Error('Auth failed:\nStatus: ' + res.statusCode + '\nMessage: ' + body));
-      }
-      return cb(null, cookies, authName, authPass);
-    });
-  });
-
-  req.on('error', function(err) {
-    return cb(err);
-  });
-
-  req.end(payload);
+  return cb(null, {sessionId: 'session'+iteration}, userBase+iteration, passBase+iteration);
 };
 
 /**
@@ -129,7 +77,7 @@ exports.getSocketURL = function(host, port, cookies) {
  */
 exports.clientIterateMessage = function(cookies, user, pass) {
   return {
-    type: 'message',
+    type: 'iterate',
     user: user,
     pass: pass,
     session: cookies.sessionId

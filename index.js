@@ -3,6 +3,7 @@
 var path = require('path');
 var io = require('socket.io-client');
 var _intervals = [];
+var done;
 
 /**
  * Create a websocket client and set it off at the server
@@ -50,14 +51,13 @@ function createClient(host, port, concurrent, frequency, duration, gen, iteratio
    */
   var postAuth = function(err, cookies, user, pass){
     if(err){
-      console.log('Error', err);
-      process.exit(1);
+      console.log('Auth error', err);
     }
 
     var socketUrl = gen.getSocketURL(host, port, cookies, user, pass) || host+':'+port;
     var socket = io(socketUrl);
 
-    var getMessage = function(cookies, user, pass){
+    var getMessage = function(){
       return {};
     };
 
@@ -66,21 +66,24 @@ function createClient(host, port, concurrent, frequency, duration, gen, iteratio
     }
 
     gen.events.forEach(function(evt){
-      socket.on(evt.name, function(){
-        var args = [evt.name, socket, cookies, user, pass].concat(Array.prototype.slice.call(arguments));
-        evt.method.apply(null, args);
+      socket.on(evt.name, function(data){
+        evt.method.call(null, evt.name, cookies, user, pass, data, socket);
       });
     });
 
     _intervals.push(setInterval(function(){
-      socket.json.send(getMessage(cookies, user, pass));
+      console.log('sending message', iteration);
+      var message = getMessage(cookies, user, pass);
+      socket.json.send(message);
     }, frequency));
 
     setTimeout(function(){
+      console.log('finished', iteration);
       clearInterval(_intervals.pop());
+      socket.emit('disconnect');
+      socket.close();
       if(_intervals.length === 0){
-        console.log('done');
-        process.exit(0);
+        done();
       }
     }, duration);
   };
@@ -109,19 +112,22 @@ function delay(duration){
  * @param   {string} generator The path to the file containing the generator exports
  * @returns {object} undefined
  */
-module.exports = function(host, port, concurrent, frequency, duration, generator){
-  var gen = {};
-  var rando = delay(duration);
+module.exports = function(host, port, concurrent, frequency, duration, generator, cb){
+  if(typeof cb !== 'function'){
+    done = cb = function(){
+      console.log('Done');
+      process.exit(0);
+    };
+  } else {
+    done = cb;
+  }
+
+  var gen = generator || {};
   if(typeof generator === 'string'){
     gen = require(path.resolve(process.cwd(), generator));
   }
 
-  var create = function(i){
-    createClient(host, port, concurrent, frequency, duration, gen, i);
-  };
-
   for(var i = 0; i < concurrent; i++){
-    setTimeout(create, rando, i);
-    rando = delay(duration);
+    createClient(host, port, concurrent, frequency, duration, gen, i);
   }
 };
