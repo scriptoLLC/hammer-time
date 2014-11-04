@@ -11,7 +11,7 @@ var _totalClients = 2;
 var _frequency = 50;
 var _duration = 500;
 
-function serve(t, cb){
+function serve(cb){
   var io = sio(2345);
 
   io.sockets.on('connection', function(socket){
@@ -28,12 +28,11 @@ function serve(t, cb){
     });
   });
 
-
   cb(null, io);
 }
 
 test('swarm', function(t){
-  serve(t, function(err, io){
+  serve(function(err, io){
     var complete = function(){
       io.close();
       t.equal(_clients, _totalClients, _totalClients+' clients connected');
