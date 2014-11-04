@@ -62,9 +62,13 @@ function createClient(host, port, concurrent, frequency, duration, gen, iteratio
     var socket = io(socketUrl, { multiplex: false })
       .on('connect', function(){
         emitter.emit('client-connected');
-        gen.events.forEach(function(evt) {
-          socket.on(evt.name, function(data) {
-            evt.method.call(null, evt.name, cookies, user, pass, data, socket, emitter);
+        if(typeof gen.events.connect === 'function'){
+          gen.events.connect('connect', cookies, user, pass, {}, socket, emitter);
+        }
+
+        Object.keys(gen.events).forEach(function(eventName) {
+          socket.on(eventName, function(data) {
+            gen.events[eventName].call(null, eventName, cookies, user, pass, data, socket, emitter);
           });
         });
 

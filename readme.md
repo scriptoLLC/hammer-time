@@ -17,13 +17,14 @@ hammer-time example.com --port 9000 --concurrent 50 --frequency 6000 --duration 
 Usage: hammer-time [host] -p [port] -c [concurrency] -f [frequency] -d [duration] -g [generator]
 
 Options:
-  -v, --version     Print the version number
+  --version     Print the version number
   -p, --port        What port to use. Default = 80
   -c, --concurrent  How many clients to run concurrently. Default = 100
   -f, --frequency   Frequency of client messages (ms). Default = 50
   -d, --duration    Length of test (ms). Default = 60000 (1 minute)
   -g, --generator   Name of generator file to load, if any. This will specify
                     the details of how to connect and authenticate to your socket server
+  -v, --verbose     Be extremely loud about what it is doing
 
 
 ```
@@ -47,6 +48,7 @@ ht(host, port, concurrent, frequency, duration, generator)
 
 ### Events
 * `start` → The client has started, but not asked any clients to yet connect
+* `client-connected` → A client has connected to the server and the handshake is complete. If you have an event named `connect`, in your `exports.events` object, that method will be called immediately after this message is emitted.
 * `message` → A client has sent a message to the server, the message is passed as an argument
 * `disconnect` → A client has disconnected from the server
 * `end` → hammer-time has run for the set duration
@@ -59,20 +61,38 @@ Generators allow you to set custom authentication methods, listeners for the soc
 
 The generator *should* export the following symbols (none of these are required, but it might not do much if you don't provide one).
 
-* `exports.events` → _array_ of event objects
+See [examples/default-generator.js](examples/default-generator.js) for an example of how this works.
+
+* `exports.events` → _object_ of functions where the key is the event name, and the value is the function to run for that event
+
 
 ```
 {
-  name: 'event name',
-  method: function(event name, socket, cookies, user, pass, message object)
+	[eventname]: function(event name, cookies, username, password, message data, socket object, emitter returned from API)
 }
+```
+
+The function's signature is:
+
+```
+/**
+ * Respond to an event
+ * @method event
+ * @param  {string} the name of the event you're responding to
+ * @param  {object} any cookies returned from your auth method
+ * @param  {string} the username that was used for authenticating this socket
+ * @param  {string} the password that was used for authenticating this socket
+ * @param  {object} the message from the socket.io server
+ * @param  {object} the socket client
+ * @param  {object} the emitter returned from the function. Allows you to emit data to the CLI or other listeners
+ */
 ```
 
 * `exports.authenticate` → `function(host, port, iteration, cb)`
 
 ```
 /**
- * Autnenticate for a client
+ * Authenticate for a client
  * @method  authenticate
  * @async
  * @param   {string} host hostname
@@ -110,7 +130,7 @@ The generator *should* export the following symbols (none of these are required,
  */
 ```
 
-See [examples/default-generator.js](examples/default-generator.js) for an example of how this works.
+
 
 ## License
 Copyright ©2014 Scripto, LLC. Available under the MIT license

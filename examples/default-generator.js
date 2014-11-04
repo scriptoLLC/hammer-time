@@ -23,15 +23,14 @@ function clientReadyMessage(cookies, user, pass) {
   };
 }
 
-exports.events = [{
-  name: 'connect',
-  method: function(event, cookies, user, pass, data, socket) {
+exports.events = {
+  connect: function(event, cookies, user, pass, message, socket, emitter) {
     socket.json.send(clientReadyMessage(cookies, user, pass));
+  },
+  disconnect: function(event, cookies, user, pass, message, socket, emitter) {
+
   }
-}, {
-  name: 'disconnect',
-  method: function() {}
-}];
+};
 
 /**
  * Autnenticate for a client
