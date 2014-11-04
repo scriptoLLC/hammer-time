@@ -68,7 +68,7 @@ See [examples/default-generator.js](examples/default-generator.js) for an exampl
 
 ```
 {
-	[eventname]: function(event name, cookies, username, password, message data, socket object, emitter returned from API)
+  [eventname]: function(event name, cookies, username, password, message data, socket object, emitter returned from API)
 }
 ```
 
