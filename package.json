@@ -1,6 +1,6 @@
 {
   "name": "hammer-time",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Flood a socket.io server with messages",
   "main": "index.js",
   "scripts": {
