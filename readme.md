@@ -113,7 +113,7 @@ The function's signature is:
  * @param   {string} host host name
  * @param   {integer} port port
  * @param   {object} cookies if you need them
- * @returns {object} undefined
+ * @returns {string} The URL that should be passed to the socket.io constructor
  */
 ```
 
@@ -126,7 +126,7 @@ The function's signature is:
  * @param   {object} cookies Any cookies you might need
  * @param   {string} user the name of the user who authenciated
  * @param   {string} pass the password of the user who authenciated
- * @returns {object} undefined
+ * @returns {object} The message you'd like to pass to the server, or `false` if there is no message
  */
 ```
 

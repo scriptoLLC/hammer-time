@@ -74,8 +74,10 @@ function createClient(host, port, concurrent, frequency, duration, gen, iteratio
 
         var sendMessage = function(){
           var message = getMessage(cookies, user, pass);
-          socket.json.send(message);
-          emitter.emit('message', message);
+          if(message){
+            socket.json.send(message);
+            emitter.emit('message', message);
+          }
         };
 
         _intervals.push(setInterval(sendMessage, frequency));
