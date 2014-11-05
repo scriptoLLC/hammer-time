@@ -3,6 +3,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 
 var minimist = require('minimist');
 var log = require('npmlog');
@@ -21,14 +22,14 @@ var verbose = false;
 var msgCount = 0;
 
 function usage() {
-  fs.createReadStream('usage.txt').pipe(process.stdout);
+  fs.createReadStream(path.join(__dirname, '../usage.txt')).pipe(process.stdout);
 }
 
 args = minimist(process.argv.slice(2));
 host = args._[0];
 
 if (args.version) {
-  var pkg = require('../package');
+  var pkg = require(path.join(__dirname, '../package'));
   log.info(pkg.name, 'version', pkg.version);
   process.exit(0);
 }
