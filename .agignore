@@ -1,0 +1,17 @@
+node_modules
+var/dirty.db
+*~
+*.patch
+npm-debug.log
+*.DS_Store
+src/static/css/styles.css
+src/static/js/v43/
+newrelic_agent.log
+scripto-server.out
+gitref
+showbackups
+coverage
+.nyc_output
+*swp
+.git
+test/results
