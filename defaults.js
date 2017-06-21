@@ -9,10 +9,10 @@
  * @param   {function} postAuth the post-auth method
  * @returns {object} undefined
  */
-exports.auth = function(host, port, iteration, postAuth) {
-  postAuth(null, host, port);
-};
+exports.auth = function (host, port, iteration, postAuth) {
+  postAuth(null, host, port)
+}
 
-exports.getMessage = function() {
-  return {};
-};
+exports.getMessage = function () {
+  return {}
+}

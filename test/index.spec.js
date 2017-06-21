@@ -1,5 +1,3 @@
-'use strict'
-
 var test = require('tap').test
 var sio = require('socket.io')
 
@@ -56,4 +54,3 @@ test('multiple clients connect and send messages', function (t) {
       })
   })
 })
-

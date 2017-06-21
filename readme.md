@@ -2,6 +2,8 @@
 
 # hammer-time
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/scriptoLLC/hammer-time.svg)](https://greenkeeper.io/)
+
 Create a swarm of socket.io clients to stress test your socket-based application.  Provides hooks to allow for HTTP based authentication to be passed into the socket connection requests if necessary, as well as listening to and responding to various socket events.
 
 ## Install/Run

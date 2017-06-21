@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict'
-
 var fs = require('fs')
 var path = require('path')
 
@@ -35,7 +33,8 @@ if (args.version) {
 }
 
 if (!host || args.help || args.h) {
-  return usage()
+  usage()
+  process.exit(0)
 }
 
 port = args.port || args.p || port
