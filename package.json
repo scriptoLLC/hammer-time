@@ -4,7 +4,8 @@
   "description": "Flood a socket.io server with messages",
   "main": "index.js",
   "scripts": {
-    "test": "tap test/*spec.js"
+    "test": "standard && npm run dep && tap test/*spec.js",
+    "dep": "dependency-check . && dependency-check . --no-dev --unused"
   },
   "repository": {
     "type": "git",
@@ -31,12 +32,17 @@
   },
   "homepage": "https://github.com/scriptollc/hammer-time",
   "dependencies": {
-    "minimist": "~1.1.0",
-    "npmlog": "~0.1.1",
-    "socket.io-client": "~1.0.6"
+    "minimist": "~1.2.0",
+    "npmlog": "~4.1.0",
+    "socket.io-client": "~2.0.3"
   },
   "devDependencies": {
-    "socket.io": "~1.1.0",
-    "tap": "~0.4.12"
+    "dependency-check": "^2.9.1",
+    "socket.io": "~2.0.3",
+    "standard": "^10.0.2",
+    "tap": "~10.5.1"
+  },
+  "engine":{
+    "node": "^6.0.0"
   }
 }

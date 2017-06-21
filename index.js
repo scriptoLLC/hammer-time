@@ -1,5 +1,3 @@
-'use strict'
-
 var events = require('events')
 var path = require('path')
 
