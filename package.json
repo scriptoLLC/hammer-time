@@ -37,7 +37,7 @@
     "socket.io-client": "~2.0.3"
   },
   "devDependencies": {
-    "dependency-check": "^2.9.1",
+    "dependency-check": "^3.0.0",
     "socket.io": "~2.0.3",
     "standard": "^10.0.2",
     "tap": "~10.5.1"
